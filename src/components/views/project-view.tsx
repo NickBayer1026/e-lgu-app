@@ -1,5 +1,8 @@
 "use client";
 
+import Image from "next/image";
+import { useState } from "react";
+
 import {
   ArrowRight,
   Bug,
@@ -59,6 +62,7 @@ import {
   TEAM_MEMBERS,
   TOTAL_BUDGET,
   type ProjectPhase,
+  type TeamMember,
 } from "@/lib/project-data";
 
 const PHASE_ICONS: Record<string, LucideIcon> = {
@@ -77,6 +81,30 @@ const PHASE_ICONS: Record<string, LucideIcon> = {
 interface ProjectViewProps {
   onBackToPublic?: () => void;
   onSwitchToView?: (view: "public" | "citizen" | "admin") => void;
+}
+
+function TeamAvatar({ member }: { member: TeamMember }) {
+  const [failed, setFailed] = useState(false);
+  const Icon = PHASE_ICONS[member.icon] ?? Users;
+
+  if (!member.image || failed) {
+    return (
+      <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+        <Icon className="size-6" />
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={member.image}
+      alt={member.name}
+      width={56}
+      height={56}
+      className="size-14 shrink-0 rounded-xl object-cover ring-1 ring-border"
+      onError={() => setFailed(true)}
+    />
+  );
 }
 
 function SectionHeading({
@@ -486,31 +514,26 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
           />
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {TEAM_MEMBERS.map((member, i) => {
-              const Icon = PHASE_ICONS[member.icon] ?? Users;
-              return (
-                <Reveal key={member.id} delay={i * 60}>
-                  <Card className="h-full card-hover">
-                    <CardHeader className="flex-row items-center gap-3">
-                      <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                        <Icon className="size-6" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-base">{member.name}</CardTitle>
-                        <Badge variant="outline" className="mt-1 font-medium">
-                          {member.role}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {member.responsibilities}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Reveal>
-              );
-            })}
+            {TEAM_MEMBERS.map((member, i) => (
+              <Reveal key={member.id} delay={i * 60}>
+                <Card className="h-full card-hover">
+                  <CardHeader className="flex-row items-center gap-3">
+                    <TeamAvatar member={member} />
+                    <div>
+                      <CardTitle className="text-base">{member.name}</CardTitle>
+                      <Badge variant="outline" className="mt-1 font-medium">
+                        {member.role}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {member.responsibilities}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Reveal>
+            ))}
 
             <Reveal delay={300}>
               <Card size="sm" className="h-full flex-col justify-center border-dashed">

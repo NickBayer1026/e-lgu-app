@@ -341,48 +341,54 @@ export interface TeamMember {
   role: string;
   responsibilities: string;
   icon: string;
+  image?: string;
 }
 
 export const TEAM_MEMBERS: TeamMember[] = [
   {
     id: "t1",
-    name: "Member 1",
-    role: "Project Manager",
+    name: "Nicholas Orlino P. Bayron",
+    role: "Project Manager & Programmer",
     responsibilities:
-      "Oversees the project, coordinates the team, and manages the schedule and deliverables.",
-    icon: "user-round",
+      "Oversees the project, coordinates the team, manages the schedule, and develops the system.",
+    icon: "code",
+    image: "/member images/Nicholas1.png",
   },
   {
     id: "t2",
-    name: "Member 2",
+    name: "Bon Barry Brioso",
     role: "System Analyst",
     responsibilities:
       "Gathers and analyzes requirements and documents system specifications.",
     icon: "search",
+    image: "/member images/Barry1.png",
   },
   {
     id: "t3",
-    name: "Member 3",
-    role: "Programmer",
-    responsibilities:
-      "Develops the system, writes the code, and implements the features.",
-    icon: "code",
-  },
-  {
-    id: "t4",
-    name: "Member 4",
+    name: "Christian Mark Baje",
     role: "Database Administrator",
     responsibilities:
       "Designs and manages the database and ensures data integrity and security.",
     icon: "database",
+    image: "/member images/Mark1.png",
+  },
+  {
+    id: "t4",
+    name: "Cipreano Mellomida",
+    role: "UI/UX Designer",
+    responsibilities:
+      "Designs the interface, creates wireframes, and prototypes the user experience.",
+    icon: "palette",
+    image: "/member images/Cipreano1.png",
   },
   {
     id: "t5",
-    name: "Member 5",
-    role: "UI/UX Designer & Tester",
+    name: "Regie Inding",
+    role: "Tester",
     responsibilities:
-      "Designs the interface, creates wireframes, and tests the system.",
-    icon: "palette",
+      "Tests the system, documents bugs, and verifies fixes and improvements.",
+    icon: "bug",
+    image: "/member images/Regie1.png",
   },
 ];
 
