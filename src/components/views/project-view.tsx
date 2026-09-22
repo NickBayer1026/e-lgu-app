@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   ArrowRight,
@@ -140,6 +140,26 @@ const SECTIONS = [
 ];
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
+  const sequencerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sequencerRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      const delta = e.deltaY + e.deltaX;
+      const canForward = el.scrollLeft < el.scrollWidth - el.clientWidth;
+      const canBackward = el.scrollLeft > 0;
+      const willMove = (delta > 0 && canForward) || (delta < 0 && canBackward);
+      if (!willMove) return;
+      e.preventDefault();
+      el.scrollLeft += delta;
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
   return (
     <div className="relative z-10">
       {/* HERO */}
@@ -319,7 +339,10 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
           />
 
           <Reveal>
-            <div className="smooth-scrollbar overflow-x-auto pb-3">
+            <div
+              ref={sequencerRef}
+              className="smooth-scrollbar overflow-x-auto pb-3"
+            >
               <div className="flex w-max items-stretch gap-0">
                 {PROJECT_PHASES.map((phase, i) => (
                   <div key={phase.id} className="flex items-center">

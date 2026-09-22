@@ -33,8 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <LoadingScreen />
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
-          enableSystem
+          defaultTheme="dark"
         >
           {children}
         </ThemeProvider>
