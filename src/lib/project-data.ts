@@ -335,11 +335,59 @@ export const formatPeso = (n: number) => "₱" + n.toLocaleString("en-PH");
 /* ------------------------------------------------------------------ */
 /* TEAM                                                               */
 /* ------------------------------------------------------------------ */
+export type WorkPersonality =
+  | "Deliverer"
+  | "Prototype"
+  | "Perfector"
+  | "Producer"
+  | "Fixer"
+  | "Finisher";
+
+export const WORK_PERSONALITIES: Record<
+  WorkPersonality,
+  { label: string; description: string }
+> = {
+  Deliverer: {
+    label: "Deliverer",
+    description:
+      "Turns plans into completed work and keeps commitments on schedule.",
+  },
+  Prototype: {
+    label: "Prototype",
+    description:
+      "Explores ideas through mockups, experiments, and early versions.",
+  },
+  Perfector: {
+    label: "Perfector",
+    description:
+      "Refines details and upholds quality, accuracy, and consistency.",
+  },
+  Producer: {
+    label: "Producer",
+    description:
+      "Generates steady output and keeps the work moving forward.",
+  },
+  Fixer: {
+    label: "Fixer",
+    description: "Diagnoses problems and finds practical solutions.",
+  },
+  Finisher: {
+    label: "Finisher",
+    description:
+      "Closes out loose ends and makes sure the work is truly complete.",
+  },
+};
+
 export interface TeamMember {
   id: string;
   name: string;
   role: string;
+  personality: WorkPersonality[];
+  skills: string[];
+  preferredTasks: string;
+  reason: string;
   responsibilities: string;
+  deliverables: string[];
   icon: string;
   image?: string;
 }
@@ -349,46 +397,90 @@ export const TEAM_MEMBERS: TeamMember[] = [
     id: "t1",
     name: "Nicholas Orlino P. Bayron",
     role: "Project Manager & Programmer",
+    personality: ["Deliverer", "Finisher"],
+    skills: ["Leadership", "Communication", "Organization"],
+    preferredTasks:
+      "Coordinate tasks, monitor progress, and help the team meet deadlines.",
+    reason:
+      "To organize the team, coordinate project activities, and ensure tasks are completed on time.",
     responsibilities:
-      "Oversees the project, coordinates the team, manages the schedule, and develops the system.",
-    icon: "code",
+      "Coordinate the team, assign tasks, monitor progress and deadlines, and help develop system features and program code.",
+    deliverables: [
+      "Project schedule",
+      "Task assignments",
+      "Progress updates",
+      "System code contributions",
+    ],
+    icon: "leadership",
     image: "/member images/Nicholas1.png",
   },
   {
     id: "t2",
     name: "Bon Barry Brioso",
     role: "System Analyst",
+    personality: ["Fixer"],
+    skills: ["System analysis", "Problem-solving", "Requirements gathering"],
+    preferredTasks:
+      "Gather user requirements, analyze user needs, and identify system problems.",
+    reason:
+      "To identify citizens' and LGU staff's needs and plan how the e-LGU system should work.",
     responsibilities:
-      "Gathers and analyzes requirements and documents system specifications.",
+      "Gather requirements, analyze users' needs, identify problems, and define the workflow.",
+    deliverables: [
+      "Requirements document",
+      "System requirements",
+      "Workflow diagram",
+    ],
     icon: "search",
     image: "/member images/Barry1.png",
   },
   {
     id: "t3",
-    name: "Christian Mark Baje",
-    role: "Database Administrator",
-    responsibilities:
-      "Designs and manages the database and ensures data integrity and security.",
-    icon: "database",
-    image: "/member images/Mark1.png",
-  },
-  {
-    id: "t4",
     name: "Cipreano Mellomida",
     role: "UI/UX Designer",
+    personality: ["Prototype"],
+    skills: ["Creativity", "Designing", "Attention to detail"],
+    preferredTasks:
+      "Design the user interface and improve the user experience.",
+    reason:
+      "To make the e-LGU system user-friendly and easy to navigate.",
     responsibilities:
-      "Designs the interface, creates wireframes, and prototypes the user experience.",
+      "Plan the layout and navigation; design clear screens and a simple user experience.",
+    deliverables: ["Wireframes or screen mockups", "Basic interface design"],
     icon: "palette",
     image: "/member images/Cipreano1.png",
   },
   {
-    id: "t5",
+    id: "t4",
     name: "Regie Inding",
-    role: "Tester",
+    role: "Web Developer / Programmer",
+    personality: ["Producer"],
+    skills: ["Coding", "Logical thinking", "Problem-solving"],
+    preferredTasks:
+      "Write code, develop system features, and fix programming errors.",
+    reason:
+      "To develop e-LGU features, such as submitting document requests and checking request status.",
     responsibilities:
-      "Tests the system, documents bugs, and verifies fixes and improvements.",
-    icon: "bug",
+      "Build system features, write code, connect screens to system functions, and fix errors.",
+    deliverables: ["Working web pages/features", "Program code"],
+    icon: "code",
     image: "/member images/Regie1.png",
+  },
+  {
+    id: "t5",
+    name: "Christian Mark Baje",
+    role: "Database / Technical Role",
+    personality: ["Perfector"],
+    skills: ["Data management", "Organization", "Technical problem-solving"],
+    preferredTasks:
+      "Organize data, design database tables, and maintain data accuracy.",
+    reason:
+      "To store and manage citizens' information and document requests accurately and securely.",
+    responsibilities:
+      "Design and organize database tables; maintain accurate and secure records.",
+    deliverables: ["Database structure", "Tables", "Organized data records"],
+    icon: "database",
+    image: "/member images/Mark1.png",
   },
 ];
 

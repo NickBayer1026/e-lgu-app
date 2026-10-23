@@ -22,6 +22,7 @@ import {
   Scale,
   Search,
   ShieldCheck,
+  UserCog,
   Users,
   Wallet,
   XCircle,
@@ -47,9 +48,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PersonalityBadge } from "@/components/personality-badge";
 import { Reveal } from "@/components/reveal";
 import { ProjectGantt } from "@/components/project-gantt";
 import { ProjectWbs } from "@/components/project-wbs";
+import { TeamOrgChart } from "@/components/team-org-chart";
 import {
   BUDGET_ITEMS,
   CONTACT,
@@ -75,6 +78,7 @@ const PHASE_ICONS: Record<string, LucideIcon> = {
   "clipboard-check": ClipboardCheck,
   flag: Flag,
   database: Database,
+  leadership: UserCog,
   search: Search,
 };
 
@@ -137,6 +141,7 @@ const SECTIONS = [
   { id: "gantt", label: "Gantt Chart" },
   { id: "budget", label: "Budget" },
   { id: "team", label: "Team & Contact" },
+  { id: "org-chart", label: "Org Chart" },
 ];
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
@@ -533,26 +538,78 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
           <SectionHeading
             eyebrow="7 · Team Members"
             title="Meet the Team"
-            description="Our group of five working together to plan, build, and test the e-LGU system."
+            description="Five roles working together to plan, design, build, and deliver the e-LGU system — each assigned based on skills, strengths, and expected contribution."
           />
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {TEAM_MEMBERS.map((member, i) => (
               <Reveal key={member.id} delay={i * 60}>
                 <Card className="h-full card-hover">
-                  <CardHeader className="flex-row items-center gap-3">
-                    <TeamAvatar member={member} />
-                    <div>
-                      <CardTitle className="text-base">{member.name}</CardTitle>
-                      <Badge variant="outline" className="mt-1 font-medium">
-                        {member.role}
-                      </Badge>
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <TeamAvatar member={member} />
+                      <div className="min-w-0">
+                        <CardTitle className="text-base leading-tight">
+                          {member.name}
+                        </CardTitle>
+                        <p className="mt-1 text-sm font-medium text-primary">
+                          {member.role}
+                        </p>
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                      {member.responsibilities}
-                    </p>
+                  <CardContent className="space-y-4">
+                    <div className="flex flex-wrap gap-1.5">
+                      {member.personality.map((personality) => (
+                        <PersonalityBadge
+                          key={personality}
+                          personality={personality}
+                        />
+                      ))}
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Skills &amp; Strengths
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        {member.skills.map((skill) => (
+                          <Badge
+                            key={skill}
+                            variant="secondary"
+                            className="font-normal"
+                          >
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Why Assigned
+                      </p>
+                      <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                        {member.reason}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        Expected Deliverables
+                      </p>
+                      <ul className="mt-1.5 space-y-1">
+                        {member.deliverables.map((deliverable) => (
+                          <li
+                            key={deliverable}
+                            className="flex items-start gap-2 text-sm text-muted-foreground"
+                          >
+                            <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                            {deliverable}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
               </Reveal>
@@ -582,6 +639,133 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
               </Card>
             </Reveal>
           </div>
+
+          {/* PART 1 — MEMBER ASSESSMENT */}
+          <div className="mt-14">
+            <h3 className="text-xl font-bold tracking-tight">
+              Part 1 · Team Member Assessment
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Skills, preferred tasks, assigned roles, and the reason for each
+              assignment.
+            </p>
+
+            <div className="mt-5 overflow-x-auto rounded-xl border bg-card shadow-sm">
+              <Table className="min-w-[980px]">
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="min-w-44">Team Member</TableHead>
+                    <TableHead className="min-w-44">Skills / Strengths</TableHead>
+                    <TableHead className="min-w-52">Preferred Tasks</TableHead>
+                    <TableHead className="min-w-40">Assigned Project Role</TableHead>
+                    <TableHead className="min-w-36">Personality</TableHead>
+                    <TableHead className="min-w-56">Reason for Assignment</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {TEAM_MEMBERS.map((member) => (
+                    <TableRow key={member.id} className="align-top">
+                      <TableCell>
+                        <p className="font-semibold">{member.name}</p>
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        <ul className="space-y-1 text-muted-foreground">
+                          {member.skills.map((skill) => (
+                            <li key={skill}>{skill}</li>
+                          ))}
+                        </ul>
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-muted-foreground">
+                        {member.preferredTasks}
+                      </TableCell>
+                      <TableCell className="whitespace-normal font-medium">
+                        {member.role}
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        <div className="flex flex-wrap gap-1.5">
+                          {member.personality.map((personality) => (
+                            <PersonalityBadge
+                              key={personality}
+                              personality={personality}
+                            />
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-muted-foreground">
+                        {member.reason}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          {/* PART 2 — ROLES & RESPONSIBILITIES */}
+          <div className="mt-12">
+            <h3 className="text-xl font-bold tracking-tight">
+              Part 2 · Roles &amp; Responsibilities
+            </h3>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Major responsibilities and expected deliverables for each project
+              role.
+            </p>
+
+            <div className="mt-5 overflow-x-auto rounded-xl border bg-card shadow-sm">
+              <Table className="min-w-[880px]">
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="min-w-44">Project Role</TableHead>
+                    <TableHead className="min-w-44">Assigned Member</TableHead>
+                    <TableHead className="min-w-72">Major Responsibilities</TableHead>
+                    <TableHead className="min-w-52">Expected Deliverables</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {TEAM_MEMBERS.map((member) => (
+                    <TableRow key={member.id} className="align-top">
+                      <TableCell className="whitespace-normal font-semibold text-primary">
+                        {member.role}
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        {member.name}
+                      </TableCell>
+                      <TableCell className="whitespace-normal text-muted-foreground">
+                        {member.responsibilities}
+                      </TableCell>
+                      <TableCell className="whitespace-normal">
+                        <div className="flex flex-wrap gap-1.5">
+                          {member.deliverables.map((deliverable) => (
+                            <Badge
+                              key={deliverable}
+                              variant="secondary"
+                              className="font-normal"
+                            >
+                              {deliverable}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ORG CHART */}
+      <section id="org-chart" className="scroll-mt-16 border-t bg-muted/40 py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow="8 · Team Structure"
+            title="Part 3 · Project Team Organizational Chart"
+            description="The Project Manager leads the team, with the System Analyst, UI/UX Designer, Web Developer, and Database / Technical roles reporting directly to the project lead."
+          />
+          <Reveal>
+            <TeamOrgChart />
+          </Reveal>
         </div>
       </section>
 
