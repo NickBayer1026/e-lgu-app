@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   ArrowRight,
@@ -147,7 +147,10 @@ const SECTIONS = [
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
   const sequencerRef = useRef<HTMLDivElement>(null);
+  const navContainerRef = useRef<HTMLDivElement>(null);
+  const navItemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
+  const [navPill, setNavPill] = useState({ left: 0, width: 0 });
 
   useEffect(() => {
     const el = sequencerRef.current;
@@ -199,6 +202,40 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
       window.removeEventListener("resize", updateActiveSection);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const container = navContainerRef.current;
+    const item = navItemRefs.current[activeSection];
+    if (!container || !item) return;
+
+    const updatePill = () => {
+      setNavPill({ left: item.offsetLeft, width: item.offsetWidth });
+    };
+
+    updatePill();
+
+    // Keep the active link visible when the nav is horizontally scrollable.
+    const itemLeft = item.offsetLeft;
+    const itemRight = itemLeft + item.offsetWidth;
+    const visibleLeft = container.scrollLeft;
+    const visibleRight = visibleLeft + container.clientWidth;
+
+    if (itemLeft < visibleLeft || itemRight > visibleRight) {
+      container.scrollTo({
+        left: Math.max(
+          0,
+          itemLeft - (container.clientWidth - item.offsetWidth) / 2
+        ),
+        behavior: "smooth",
+      });
+    }
+
+    const observer = new ResizeObserver(updatePill);
+    observer.observe(container);
+    observer.observe(item);
+
+    return () => observer.disconnect();
+  }, [activeSection]);
 
   return (
     <div className="relative z-10">
@@ -253,10 +290,23 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
 
       {/* SECTION NAV */}
       <nav className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
-        <div className="smooth-scrollbar mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6">
+        <div
+          ref={navContainerRef}
+          className="smooth-scrollbar relative mx-auto flex max-w-7xl items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6"
+        >
+          {/* Animated active-section pill */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute top-1.5 bottom-1.5 rounded-full bg-primary shadow-sm transition-[left,width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{ left: navPill.left, width: navPill.width }}
+          />
+
           {SECTIONS.map((s) => (
             <a
               key={s.id}
+              ref={(el) => {
+                navItemRefs.current[s.id] = el;
+              }}
               href={`#${s.id}`}
               aria-current={activeSection === s.id ? "location" : undefined}
               onClick={(e) => {
@@ -267,9 +317,9 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
                 e.currentTarget.blur();
               }}
               className={cn(
-                "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                "relative z-10 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-300",
                 activeSection === s.id
-                  ? "bg-primary text-primary-foreground shadow-sm"
+                  ? "text-primary-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
