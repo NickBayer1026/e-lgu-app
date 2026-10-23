@@ -53,6 +53,7 @@ import { Reveal } from "@/components/reveal";
 import { ProjectGantt } from "@/components/project-gantt";
 import { ProjectWbs } from "@/components/project-wbs";
 import { TeamOrgChart } from "@/components/team-org-chart";
+import { cn } from "@/lib/utils";
 import {
   BUDGET_ITEMS,
   CONTACT,
@@ -146,6 +147,7 @@ const SECTIONS = [
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
   const sequencerRef = useRef<HTMLDivElement>(null);
+  const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
 
   useEffect(() => {
     const el = sequencerRef.current;
@@ -163,6 +165,39 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  useEffect(() => {
+    const updateActiveSection = () => {
+      const activationOffset = 96;
+      let current = SECTIONS[0].id;
+
+      for (const section of SECTIONS) {
+        const element = document.getElementById(section.id);
+        if (!element) continue;
+        if (element.getBoundingClientRect().top <= activationOffset) {
+          current = section.id;
+        }
+      }
+
+      const atPageBottom =
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2;
+      if (atPageBottom) {
+        current = SECTIONS[SECTIONS.length - 1].id;
+      }
+
+      setActiveSection(current);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("resize", updateActiveSection);
+
+    return () => {
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("resize", updateActiveSection);
+    };
   }, []);
 
   return (
@@ -223,6 +258,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
             <a
               key={s.id}
               href={`#${s.id}`}
+              aria-current={activeSection === s.id ? "location" : undefined}
               onClick={(e) => {
                 e.preventDefault();
                 document
@@ -230,7 +266,12 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
                   ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 e.currentTarget.blur();
               }}
-              className="shrink-0 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                activeSection === s.id
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
             >
               {s.label}
             </a>
@@ -462,7 +503,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
           <SectionHeading
             eyebrow="5 · Gantt Chart"
             title="Project Timeline at a Glance"
-            description="A 12-week Gantt chart showing when each phase starts and ends. Colored bars show completed phases (weeks 1–8), while planning of the remaining phases is underway."
+            description="A 12-week Gantt chart showing when each phase starts and ends. Planning through development are complete, testing is in progress, and deployment, evaluation, and finalization are scheduled."
           />
 
           <Reveal>

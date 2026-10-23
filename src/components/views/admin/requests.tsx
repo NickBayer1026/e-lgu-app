@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Eye, Search, X } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 
+import { RequestReviewDialog } from "@/components/request-review-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -36,11 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  ALL_REQUESTS,
-  type CitizenRequest,
-  type RequestStatus,
-} from "@/lib/mock-data";
+import { useAppState } from "@/lib/app-state";
+import type { RequestStatus } from "@/lib/mock-data";
 
 const STATUS_FILTERS: ("All" | RequestStatus)[] = [
   "All",
@@ -51,38 +41,33 @@ const STATUS_FILTERS: ("All" | RequestStatus)[] = [
   "Rejected",
 ];
 
-interface AdminRequestsProps {
-  initialRequests?: CitizenRequest[];
-}
-
-export function AdminRequests({ initialRequests }: AdminRequestsProps) {
-  const [requests, setRequests] = useState<CitizenRequest[]>(
-    initialRequests ?? ALL_REQUESTS
-  );
+export function AdminRequests() {
+  const { requests } = useAppState();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | RequestStatus>(
     "All"
   );
-  const [selected, setSelected] = useState<CitizenRequest | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    return requests.filter((r) => {
+    return requests.filter((request) => {
+      const query = search.toLowerCase();
       const matchesSearch =
         !search ||
-        r.trackingId.toLowerCase().includes(search.toLowerCase()) ||
-        r.citizen.toLowerCase().includes(search.toLowerCase()) ||
-        r.service.toLowerCase().includes(search.toLowerCase());
+        request.trackingId.toLowerCase().includes(query) ||
+        request.citizen.toLowerCase().includes(query) ||
+        request.service.toLowerCase().includes(query);
       const matchesStatus =
-        statusFilter === "All" || r.status === statusFilter;
+        statusFilter === "All" || request.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
   }, [requests, search, statusFilter]);
 
-  const setRequestStatus = (id: string, status: RequestStatus) => {
-    setRequests((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status } : r))
-    );
-  };
+  // Derive the selected request from shared state by ID so status changes made
+  // in the dialog are reflected immediately instead of using a stale object.
+  const selected = selectedId
+    ? requests.find((request) => request.id === selectedId) ?? null
+    : null;
 
   return (
     <div className="space-y-4">
@@ -101,19 +86,20 @@ export function AdminRequests({ initialRequests }: AdminRequestsProps) {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search ID, name, service..."
               className="pl-9"
+              aria-label="Search requests"
             />
           </div>
           <Select
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as "All" | RequestStatus)}
           >
-            <SelectTrigger className="w-full sm:w-44">
+            <SelectTrigger className="w-full sm:w-44" aria-label="Filter by status">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
-              {STATUS_FILTERS.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
+              {STATUS_FILTERS.map((status) => (
+                <SelectItem key={status} value={status}>
+                  {status}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -166,7 +152,7 @@ export function AdminRequests({ initialRequests }: AdminRequestsProps) {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setSelected(request)}
+                        onClick={() => setSelectedId(request.id)}
                       >
                         <Eye className="mr-1.5 size-3.5" />
                         Review
@@ -190,85 +176,10 @@ export function AdminRequests({ initialRequests }: AdminRequestsProps) {
         </CardContent>
       </Card>
 
-      {/* REVIEW DIALOG */}
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        {selected && (
-          <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-              <DialogTitle>Review Request</DialogTitle>
-              <DialogDescription>
-                {selected.trackingId} · submitted {selected.date}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="grid gap-4 py-2">
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div>
-                  <p className="font-semibold">{selected.citizen}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {selected.service}
-                  </p>
-                </div>
-                <StatusBadge status={selected.status} />
-              </div>
-
-              {selected.notes && (
-                <p className="rounded-md bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
-                  Note: {selected.notes}
-                </p>
-              )}
-
-              <div className="text-sm">
-                <p className="mb-2 font-medium">Set request status</p>
-                <Select
-                  value={selected.status}
-                  onValueChange={(v) =>
-                    setRequestStatus(selected.id, v as RequestStatus)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUS_FILTERS.filter((s) => s !== "All").map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={() => setSelected(null)}>
-                Close
-              </Button>
-              <Button
-                variant="destructive"
-                disabled={selected.status === "Rejected"}
-                onClick={() => {
-                  setRequestStatus(selected.id, "Rejected");
-                  setSelected(null);
-                }}
-              >
-                <X className="mr-1.5 size-4" />
-                Reject
-              </Button>
-              <Button
-                disabled={selected.status === "Approved"}
-                onClick={() => {
-                  setRequestStatus(selected.id, "Approved");
-                  setSelected(null);
-                }}
-              >
-                <Check className="mr-1.5 size-4" />
-                Approve
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        )}
-      </Dialog>
+      <RequestReviewDialog
+        request={selected}
+        onClose={() => setSelectedId(null)}
+      />
     </div>
   );
 }

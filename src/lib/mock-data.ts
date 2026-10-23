@@ -5,11 +5,11 @@ export type RequestStatus =
   | "Ready for Pickup"
   | "Rejected";
 
-export type ServiceType =
-  | "Barangay Clearance"
-  | "Business Permit"
-  | "Certificate of Indigency"
-  | "Cedula";
+/**
+ * Service names are dynamic because administrators can add new services at
+ * runtime, so requests store the service name as a free-form string.
+ */
+export type ServiceType = string;
 
 export interface Service {
   id: string;
@@ -34,6 +34,7 @@ export interface Citizen {
   name: string;
   address: string;
   email: string;
+  contact: string;
   barangay: string;
   city: string;
 }
@@ -85,10 +86,11 @@ export const SERVICES: Service[] = [
 /* ------------------------------------------------------------------ */
 export const CITIZEN: Citizen = {
   name: "Nick Bayer",
-  address: "Blk 12, Lot 5, Phase 3, Brgy. San Isidro",
+  address: "Blk 12, Lot 5, Phase 3",
   barangay: "San Isidro",
   city: "Dapitan City, Zamboanga del Norte",
   email: "nick.bayer@email.com",
+  contact: "+63 917 555 0123",
 };
 
 export const CITIZEN_REQUESTS: CitizenRequest[] = [
@@ -97,7 +99,7 @@ export const CITIZEN_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BC-1042",
     citizen: "Nick Bayer",
     service: "Barangay Clearance",
-    date: "Sep 01, 2026",
+    date: "Oct 20, 2026",
     status: "Ready for Pickup",
   },
   {
@@ -105,7 +107,7 @@ export const CITIZEN_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BP-0871",
     citizen: "Nick Bayer",
     service: "Business Permit",
-    date: "Aug 28, 2026",
+    date: "Oct 14, 2026",
     status: "Pending",
   },
   {
@@ -113,7 +115,7 @@ export const CITIZEN_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CI-0633",
     citizen: "Nick Bayer",
     service: "Certificate of Indigency",
-    date: "Aug 22, 2026",
+    date: "Oct 06, 2026",
     status: "Approved",
   },
   {
@@ -121,7 +123,7 @@ export const CITIZEN_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CD-0510",
     citizen: "Nick Bayer",
     service: "Cedula",
-    date: "Aug 15, 2026",
+    date: "Sep 28, 2026",
     status: "Rejected",
     notes: "Invalid photo ID submitted. Please re-submit.",
   },
@@ -143,7 +145,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BC-2451",
     citizen: "Maria Santos",
     service: "Barangay Clearance",
-    date: "Sep 02, 2026",
+    date: "Oct 23, 2026",
     status: "Pending",
   },
   {
@@ -151,7 +153,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BP-2108",
     citizen: "Jose Ramirez",
     service: "Business Permit",
-    date: "Sep 02, 2026",
+    date: "Oct 23, 2026",
     status: "Under Review",
   },
   {
@@ -159,7 +161,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CI-1894",
     citizen: "Ana Bautista",
     service: "Certificate of Indigency",
-    date: "Sep 01, 2026",
+    date: "Oct 22, 2026",
     status: "Approved",
   },
   {
@@ -167,7 +169,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CD-1657",
     citizen: "Reynaldo Cruz",
     service: "Cedula",
-    date: "Sep 01, 2026",
+    date: "Oct 22, 2026",
     status: "Ready for Pickup",
   },
   {
@@ -175,7 +177,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BC-1523",
     citizen: "Liza Mendoza",
     service: "Barangay Clearance",
-    date: "Aug 31, 2026",
+    date: "Oct 21, 2026",
     status: "Rejected",
   },
   {
@@ -183,7 +185,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BP-1405",
     citizen: "Carlo Villanueva",
     service: "Business Permit",
-    date: "Aug 31, 2026",
+    date: "Oct 21, 2026",
     status: "Pending",
   },
   {
@@ -191,7 +193,7 @@ export const RECENT_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CI-1298",
     citizen: "Grace Aquino",
     service: "Certificate of Indigency",
-    date: "Aug 30, 2026",
+    date: "Oct 20, 2026",
     status: "Approved",
   },
 ];
@@ -207,29 +209,45 @@ export const REQUESTS_BY_SERVICE = [
 ];
 
 export const SUBMISSION_VOLUME_30_DAYS = [
-  { date: "Aug 04", requests: 118 },
-  { date: "Aug 06", requests: 132 },
-  { date: "Aug 08", requests: 96 },
-  { date: "Aug 10", requests: 145 },
-  { date: "Aug 12", requests: 128 },
-  { date: "Aug 14", requests: 152 },
-  { date: "Aug 16", requests: 110 },
-  { date: "Aug 18", requests: 138 },
-  { date: "Aug 20", requests: 163 },
-  { date: "Aug 22", requests: 121 },
-  { date: "Aug 24", requests: 149 },
-  { date: "Aug 26", requests: 173 },
-  { date: "Aug 28", requests: 142 },
-  { date: "Aug 30", requests: 158 },
-  { date: "Sep 01", requests: 184 },
+  { date: "Sep 24", requests: 118 },
+  { date: "Sep 26", requests: 132 },
+  { date: "Sep 28", requests: 96 },
+  { date: "Sep 30", requests: 145 },
+  { date: "Oct 02", requests: 128 },
+  { date: "Oct 04", requests: 152 },
+  { date: "Oct 06", requests: 110 },
+  { date: "Oct 08", requests: 138 },
+  { date: "Oct 10", requests: 163 },
+  { date: "Oct 12", requests: 121 },
+  { date: "Oct 14", requests: 149 },
+  { date: "Oct 16", requests: 173 },
+  { date: "Oct 18", requests: 142 },
+  { date: "Oct 20", requests: 158 },
+  { date: "Oct 22", requests: 184 },
 ];
 
+export const REQUEST_STATUS_COLORS = {
+  Pending: "#f59e0b",
+  "Under Review": "#3b82f6",
+  Approved: "#10b981",
+  "Ready for Pickup": "#0ea5e9",
+  Rejected: "#f43f5e",
+} as const;
+
 export const OVERALL_REQUEST_STATUS = [
-  { status: "Pending", value: 156, fill: "var(--color-pending)" },
-  { status: "Under Review", value: 92, fill: "var(--color-review)" },
-  { status: "Approved", value: 1240, fill: "var(--color-approved)" },
-  { status: "Ready for Pickup", value: 610, fill: "var(--color-pickup)" },
-  { status: "Rejected", value: 96, fill: "var(--color-rejected)" },
+  { status: "Pending", value: 156, fill: REQUEST_STATUS_COLORS.Pending },
+  {
+    status: "Under Review",
+    value: 92,
+    fill: REQUEST_STATUS_COLORS["Under Review"],
+  },
+  { status: "Approved", value: 2388, fill: REQUEST_STATUS_COLORS.Approved },
+  {
+    status: "Ready for Pickup",
+    value: 1110,
+    fill: REQUEST_STATUS_COLORS["Ready for Pickup"],
+  },
+  { status: "Rejected", value: 96, fill: REQUEST_STATUS_COLORS.Rejected },
 ];
 
 export const OVERALL_STATUS_TOTAL = OVERALL_REQUEST_STATUS.reduce(
@@ -247,7 +265,7 @@ export const ALL_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BC-1187",
     citizen: "Ramil Dizon",
     service: "Barangay Clearance",
-    date: "Aug 29, 2026",
+    date: "Oct 19, 2026",
     status: "Under Review",
   },
   {
@@ -255,7 +273,7 @@ export const ALL_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BP-0970",
     citizen: "Sonia Ramos",
     service: "Business Permit",
-    date: "Aug 28, 2026",
+    date: "Oct 18, 2026",
     status: "Pending",
   },
   {
@@ -263,7 +281,7 @@ export const ALL_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CI-0862",
     citizen: "Pedro Navarro",
     service: "Certificate of Indigency",
-    date: "Aug 27, 2026",
+    date: "Oct 17, 2026",
     status: "Approved",
   },
   {
@@ -271,7 +289,7 @@ export const ALL_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-CD-0741",
     citizen: "Fely Lim",
     service: "Cedula",
-    date: "Aug 26, 2026",
+    date: "Oct 16, 2026",
     status: "Ready for Pickup",
   },
   {
@@ -279,7 +297,7 @@ export const ALL_REQUESTS: CitizenRequest[] = [
     trackingId: "LGU-2026-BC-0655",
     citizen: "Arnel Gonzales",
     service: "Barangay Clearance",
-    date: "Aug 25, 2026",
+    date: "Oct 15, 2026",
     status: "Pending",
     notes: "Supporting documents incomplete.",
   },
@@ -369,10 +387,33 @@ export const SERVICE_CONFIGS: ServiceConfig[] = [
 /* ADMIN: reports                                                      */
 /* ------------------------------------------------------------------ */
 export const MONTHLY_REQUESTS = [
-  { month: "Apr", count: 720 },
-  { month: "May", count: 846 },
-  { month: "Jun", count: 1004 },
-  { month: "Jul", count: 1126 },
-  { month: "Aug", count: 1298 },
-  { month: "Sep", count: 884 },
+  { month: "May", count: 580 },
+  { month: "Jun", count: 640 },
+  { month: "Jul", count: 690 },
+  { month: "Aug", count: 710 },
+  { month: "Sep", count: 702 },
+  { month: "Oct", count: 520 },
 ];
+
+/* ------------------------------------------------------------------ */
+/* ADMIN: settings                                                     */
+/* ------------------------------------------------------------------ */
+export interface MunicipalitySettings {
+  municipalityName: string;
+  primaryHall: string;
+  officeHours: string;
+  contactNumber: string;
+  defaultReviewDays: string;
+  notificationPreference: string;
+}
+
+export const DEFAULT_SETTINGS: MunicipalitySettings = {
+  municipalityName: "City Government of Dapitan",
+  primaryHall: "City Hall, Barangay Sto. Niño",
+  officeHours: "Mon–Fri, 8:00 AM – 5:00 PM",
+  contactNumber: "(065) 555-1234",
+  defaultReviewDays: "2",
+  notificationPreference: "both",
+};
+
+export const DATA_LAST_UPDATED = "Oct 23, 2026";

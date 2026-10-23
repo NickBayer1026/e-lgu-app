@@ -24,7 +24,10 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
+  ADMIN_METRICS,
   MONTHLY_REQUESTS,
+  OVERALL_REQUEST_STATUS,
+  OVERALL_STATUS_TOTAL,
   REQUESTS_BY_SERVICE,
 } from "@/lib/mock-data";
 
@@ -36,10 +39,23 @@ const serviceConfig = {
   requests: { label: "Requests", color: "var(--primary)" },
 } as const;
 
+const approvedTotal = OVERALL_REQUEST_STATUS.filter(
+  (item) => item.status === "Approved" || item.status === "Ready for Pickup"
+).reduce((sum, item) => sum + item.value, 0);
+const approvalRate = ((approvedTotal / OVERALL_STATUS_TOTAL) * 100).toFixed(1);
+
 const SUMMARY = [
-  { label: "Total Requests (YTD)", value: "5,878", change: "+14.2%" },
-  { label: "Approval Rate", value: "89.4%", change: "+3.1%" },
-  { label: "Avg. Processing", value: "2.4 days", change: "-12%" },
+  {
+    label: "Total Requests (6 months)",
+    value: OVERALL_STATUS_TOTAL.toLocaleString(),
+    change: "+14.2%",
+  },
+  { label: "Approval Rate", value: `${approvalRate}%`, change: "+3.1%" },
+  {
+    label: "Avg. Processing",
+    value: `${ADMIN_METRICS.avgProcessingDays.toFixed(1)} days`,
+    change: "-12%",
+  },
   { label: "Digital Adoption", value: "71%", change: "+19%" },
 ];
 

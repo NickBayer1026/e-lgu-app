@@ -21,21 +21,10 @@ const BAR_COLORS = [
   "bg-chart-5",
 ];
 
-const PROGRESS: Record<string, number> = {
-  planning: 100,
-  analysis: 100,
-  design: 100,
-  development: 100,
-  testing: 0,
-  deployment: 0,
-  evaluation: 0,
-  finalization: 0,
-};
-
 function PhaseRow({ phase, index }: { phase: ProjectPhase; index: number }) {
   const left = ((phase.startWeek - 1) * WEEK_WIDTH).toFixed(3);
   const width = ((phase.endWeek - phase.startWeek + 1) * WEEK_WIDTH).toFixed(3);
-  const progress = PROGRESS[phase.id] ?? 0;
+  const progress = phase.progress;
 
   return (
     <div className="flex items-center border-b border-muted last:border-b-0">
@@ -58,7 +47,7 @@ function PhaseRow({ phase, index }: { phase: ProjectPhase; index: number }) {
         <div
           className="group relative h-6 rounded-full bg-muted/60"
           style={{ left: `${left}%`, width: `${width}%` }}
-          title={`${phase.short} · ${phase.weeksLabel}`}
+          title={`${phase.short} · ${phase.weeksLabel} · ${progress}% complete`}
         >
           <div
             className={cn(

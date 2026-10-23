@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { AppStateProvider } from "@/lib/app-state";
 import { AdminView } from "@/components/views/admin-view";
 import { CitizenView } from "@/components/views/citizen-view";
 import { LandingView } from "@/components/views/landing-view";
@@ -39,7 +40,8 @@ export default function Home() {
   }, [view]);
 
   return (
-    <>
+    <AppStateProvider>
+      <>
       {/* Demo view switcher bar */}
       <div className="fixed bottom-3 left-1/2 z-50 w-full max-w-[calc(100vw-1.5rem)] -translate-x-1/2 sm:w-auto sm:bottom-4">
         <div
@@ -88,6 +90,7 @@ export default function Home() {
           />
         )}
       </div>
-    </>
+      </>
+    </AppStateProvider>
   );
 }

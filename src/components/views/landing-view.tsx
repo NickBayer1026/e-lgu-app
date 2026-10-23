@@ -24,11 +24,8 @@ import { Input } from "@/components/ui/input";
 import { ServiceIcon } from "@/components/service-icon";
 import { PublicNavbar } from "@/components/public-navbar";
 import { StatusBadge } from "@/components/status-badge";
-import {
-  CITIZEN_REQUESTS,
-  SERVICES,
-  type CitizenRequest,
-} from "@/lib/mock-data";
+import { useAppState } from "@/lib/app-state";
+import type { CitizenRequest } from "@/lib/mock-data";
 
 interface LandingViewProps {
   onLogin: () => void;
@@ -36,6 +33,7 @@ interface LandingViewProps {
 }
 
 export function LandingView({ onLogin, onSwitchToView }: LandingViewProps) {
+  const { requests, services } = useAppState();
   const [trackingId, setTrackingId] = useState("");
   const [trackingResult, setTrackingResult] = useState<
     CitizenRequest | "not-found" | null
@@ -48,7 +46,7 @@ export function LandingView({ onLogin, onSwitchToView }: LandingViewProps) {
       setTrackingResult(null);
       return;
     }
-    const found = CITIZEN_REQUESTS.find(
+    const found = requests.find(
       (r) => r.trackingId.toUpperCase() === normalized
     );
     setTrackingResult(found ?? "not-found");
@@ -112,7 +110,7 @@ export function LandingView({ onLogin, onSwitchToView }: LandingViewProps) {
 
           {/* TRACKING RESULT */}
           {trackingResult && (
-            <div key={trackingId} className="mx-auto mt-6 max-w-xl text-left animate-fade-in-down">
+            <div className="mx-auto mt-6 max-w-xl text-left animate-fade-in-down">
               {trackingResult === "not-found" ? (
                 <Card className="border-destructive/30 bg-destructive/5 card-hover">
                   <CardContent className="flex items-start gap-3 p-4">
@@ -172,7 +170,7 @@ export function LandingView({ onLogin, onSwitchToView }: LandingViewProps) {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-stagger">
-            {SERVICES.map((service) => (
+            {services.map((service) => (
               <Card
                 key={service.id}
                 className="group flex flex-col border bg-card card-hover hover:border-primary/40"

@@ -21,13 +21,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useAppState } from "@/lib/app-state";
+import type { MunicipalitySettings } from "@/lib/mock-data";
 
 export function AdminSettings() {
+  const { settings, updateSettings } = useAppState();
+  const [draft, setDraft] = useState<MunicipalitySettings>(() => ({
+    ...settings,
+  }));
   const [saved, setSaved] = useState(false);
 
+  const updateField = <Key extends keyof MunicipalitySettings>(
+    key: Key,
+    value: MunicipalitySettings[Key]
+  ) => {
+    setDraft((previous) => ({ ...previous, [key]: value }));
+  };
+
   const handleSave = () => {
+    updateSettings(draft);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    window.setTimeout(() => setSaved(false), 2500);
   };
 
   return (
@@ -50,19 +64,37 @@ export function AdminSettings() {
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="mun-name">Municipality Name</Label>
-              <Input id="mun-name" defaultValue="City Government of Dapitan" />
+              <Input
+                id="mun-name"
+                value={draft.municipalityName}
+                onChange={(e) =>
+                  updateField("municipalityName", e.target.value)
+                }
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="mun-barangay">Primary Barangay Hall</Label>
-              <Input id="mun-barangay" defaultValue="Municipal Hall, Barangay Sto. Niño" />
+              <Input
+                id="mun-barangay"
+                value={draft.primaryHall}
+                onChange={(e) => updateField("primaryHall", e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="mun-hours">Office Hours</Label>
-              <Input id="mun-hours" defaultValue="Mon–Fri, 8:00 AM – 5:00 PM" />
+              <Input
+                id="mun-hours"
+                value={draft.officeHours}
+                onChange={(e) => updateField("officeHours", e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="mun-phone">Contact Number</Label>
-              <Input id="mun-phone" defaultValue="(045) 555-1234" />
+              <Input
+                id="mun-phone"
+                value={draft.contactNumber}
+                onChange={(e) => updateField("contactNumber", e.target.value)}
+              />
             </div>
           </CardContent>
         </Card>
@@ -77,24 +109,36 @@ export function AdminSettings() {
             </CardHeader>
             <CardContent className="grid gap-4">
               <div className="grid gap-2">
-                <Label>Default Review Time (days)</Label>
-                <Select defaultValue="2">
-                  <SelectTrigger>
+                <Label htmlFor="review-days">Default Review Time (days)</Label>
+                <Select
+                  value={draft.defaultReviewDays}
+                  onValueChange={(value) =>
+                    updateField("defaultReviewDays", value)
+                  }
+                >
+                  <SelectTrigger id="review-days">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {["1", "2", "3", "5", "7"].map((d) => (
-                      <SelectItem key={d} value={d}>
-                        {d} day{d === "1" ? "" : "s"}
+                    {["1", "2", "3", "5", "7"].map((days) => (
+                      <SelectItem key={days} value={days}>
+                        {days} day{days === "1" ? "" : "s"}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>Notification Preference</Label>
-                <Select defaultValue="both">
-                  <SelectTrigger>
+                <Label htmlFor="notification-preference">
+                  Notification Preference
+                </Label>
+                <Select
+                  value={draft.notificationPreference}
+                  onValueChange={(value) =>
+                    updateField("notificationPreference", value)
+                  }
+                >
+                  <SelectTrigger id="notification-preference">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -125,7 +169,10 @@ export function AdminSettings() {
                     Require OTP for admin logins
                   </p>
                 </div>
-                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                <Badge
+                  variant="outline"
+                  className="bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300"
+                >
                   Enabled
                 </Badge>
               </div>

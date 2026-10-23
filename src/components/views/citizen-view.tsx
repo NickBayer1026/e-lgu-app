@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   ArrowRight,
-  BellRing,
   FilePlus2,
   MapPin,
   Mail,
@@ -11,6 +10,7 @@ import {
   User,
 } from "lucide-react";
 
+import { NotificationsButton } from "@/components/notifications-button";
 import { PublicNavbar } from "@/components/public-navbar";
 import { ServiceIcon } from "@/components/service-icon";
 import { StatusBadge } from "@/components/status-badge";
@@ -40,13 +40,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import {
-  CITIZEN,
-  CITIZEN_REQUESTS,
-  SERVICES,
-  type CitizenRequest,
-  type ServiceType,
-} from "@/lib/mock-data";
+import { generateTrackingId, useAppState } from "@/lib/app-state";
+import { CITIZEN, type CitizenRequest } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 interface CitizenViewProps {
@@ -54,15 +49,18 @@ interface CitizenViewProps {
   onSwitchToView: (view: "public" | "citizen" | "admin") => void;
 }
 
-export function CitizenView({
-  onLogout,
-  onSwitchToView,
-}: CitizenViewProps) {
-  const [requests, setRequests] = useState<CitizenRequest[]>(
-    CITIZEN_REQUESTS
-  );
-  const [newService, setNewService] = useState<ServiceType | "">("");
+export function CitizenView({ onLogout, onSwitchToView }: CitizenViewProps) {
+  const { requests, services, addRequest } = useAppState();
+  const [newService, setNewService] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [activeOnly, setActiveOnly] = useState(false);
+
+  const myRequests = requests.filter(
+    (request) => request.citizen === CITIZEN.name
+  );
+  const visibleRequests = activeOnly
+    ? myRequests.filter((request) => request.status !== "Rejected")
+    : myRequests;
 
   const initials = CITIZEN.name
     .split(" ")
@@ -71,18 +69,10 @@ export function CitizenView({
 
   const handleSubmitRequest = () => {
     if (!newService) return;
-    const id = `r${Date.now()}`;
-    const trackingId = `LGU-2026-${new Date()
-      .getTime()
-      .toString()
-      .slice(-4)}`;
+
     const next: CitizenRequest = {
-      id,
-      trackingId: `${trackingId}-${newService
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()}`,
+      id: `r${Date.now()}`,
+      trackingId: generateTrackingId(newService, requests),
       citizen: CITIZEN.name,
       service: newService,
       date: new Date().toLocaleDateString("en-US", {
@@ -92,7 +82,8 @@ export function CitizenView({
       }),
       status: "Pending",
     };
-    setRequests((prev) => [next, ...prev]);
+
+    addRequest(next);
     setNewService("");
     setDialogOpen(false);
   };
@@ -122,7 +113,13 @@ export function CitizenView({
             >
               Admin demo →
             </Button>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog
+              open={dialogOpen}
+              onOpenChange={(open) => {
+                setDialogOpen(open);
+                if (!open) setNewService("");
+              }}
+            >
               <DialogTrigger asChild>
                 <Button className="transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
                   <FilePlus2 className="mr-2 size-4" />
@@ -144,36 +141,31 @@ export function CitizenView({
                   </span>
                 </div>
                 <Select
-                  value={newService || undefined}
-                  onValueChange={(value) =>
-                    setNewService(value as ServiceType)
-                  }
+                  value={newService}
+                  onValueChange={(value) => setNewService(value)}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a service..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {SERVICES.map((service) => {
-                      const config = SERVICES.find((s) => s.id === service.id);
-                      return (
-                        <SelectItem
-                          key={service.id}
-                          value={service.name}
-                          className="gap-3"
-                        >
-                          <span className="flex items-center gap-2">
-                            <ServiceIcon
-                              name={config?.icon ?? ""}
-                              className="size-4 text-primary"
-                            />
-                            {service.name}
-                            <span className="text-xs text-muted-foreground">
-                              · {service.fee}
-                            </span>
+                    {services.map((service) => (
+                      <SelectItem
+                        key={service.id}
+                        value={service.name}
+                        className="gap-3"
+                      >
+                        <span className="flex items-center gap-2">
+                          <ServiceIcon
+                            name={service.icon}
+                            className="size-4 text-primary"
+                          />
+                          {service.name}
+                          <span className="text-xs text-muted-foreground">
+                            · {service.fee}
                           </span>
-                        </SelectItem>
-                      );
-                    })}
+                        </span>
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <DialogFooter>
@@ -204,7 +196,7 @@ export function CitizenView({
               <p className="text-lg font-semibold">{CITIZEN.name}</p>
               <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-3.5" />
-                {CITIZEN.address}, {CITIZEN.barangay}, {CITIZEN.city}
+                {CITIZEN.address}, Brgy. {CITIZEN.barangay}, {CITIZEN.city}
               </p>
               <div className="mt-1.5 flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
@@ -213,16 +205,16 @@ export function CitizenView({
                 </span>
                 <span className="flex items-center gap-1.5">
                   <Phone className="size-3.5" />
-                  +63 917 555 0123
+                  {CITIZEN.contact}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-4 md:flex-col md:items-end md:justify-center">
-              <Button variant="ghost" size="sm" className="relative">
-                <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-destructive animate-pulse-soft" />
-                <BellRing className="mr-2 size-4" />
-                Notifications
-              </Button>
+              <NotificationsButton
+                scope="citizen"
+                label="Notifications"
+                showDot
+              />
               <Button
                 variant="ghost"
                 size="sm"
@@ -243,16 +235,22 @@ export function CitizenView({
               Track the status of your submitted service requests.
             </p>
           </div>
-          <Button variant="outline" size="sm" className="group">
-            View all
+          <Button
+            variant="outline"
+            size="sm"
+            className="group"
+            aria-pressed={activeOnly}
+            onClick={() => setActiveOnly((value) => !value)}
+          >
+            {activeOnly ? "View all" : "Active only"}
             <ArrowRight className="ml-1.5 size-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
           </Button>
         </div>
 
         <div className="mt-5 grid gap-4 md:grid-cols-2 animate-stagger">
-          {requests.map((request) => {
-            const service = SERVICES.find(
-              (s) => s.name === request.service
+          {visibleRequests.map((request) => {
+            const service = services.find(
+              (item) => item.name === request.service
             );
             return (
               <Card
@@ -290,7 +288,7 @@ export function CitizenView({
                           : "text-primary"
                       )}
                     >
-                      {service?.fee}
+                      {service?.fee ?? "—"}
                     </span>
                   </div>
                   {request.notes && (
@@ -303,6 +301,14 @@ export function CitizenView({
             );
           })}
         </div>
+
+        {visibleRequests.length === 0 && (
+          <Card className="mt-5 border border-dashed">
+            <CardContent className="p-10 text-center text-sm text-muted-foreground">
+              No requests match this filter.
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );

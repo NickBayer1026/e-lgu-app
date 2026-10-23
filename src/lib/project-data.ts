@@ -8,6 +8,7 @@ export interface ProjectPhase {
   weeksLabel: string;
   startWeek: number;
   endWeek: number;
+  progress: number;
   activities: string[];
   deliverable: string;
   icon: string;
@@ -69,6 +70,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 1",
     startWeek: 1,
     endWeek: 1,
+    progress: 100,
     activities: [
       "Identify LGU problems and requirements",
       "Define project scope and objectives",
@@ -88,6 +90,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 2",
     startWeek: 2,
     endWeek: 2,
+    progress: 100,
     activities: [
       "Gather system requirements from stakeholders",
       "Document functional requirements",
@@ -107,6 +110,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Weeks 3–4",
     startWeek: 3,
     endWeek: 4,
+    progress: 100,
     activities: [
       "Design UI/UX wireframes and mockups",
       "Design database schema",
@@ -126,6 +130,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Weeks 5–8",
     startWeek: 5,
     endWeek: 8,
+    progress: 100,
     activities: [
       "Set up environment and backend foundation",
       "Build citizen portal (registration, profile, requests, document upload)",
@@ -145,6 +150,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 9",
     startWeek: 9,
     endWeek: 9,
+    progress: 60,
     activities: [
       "Perform unit and integration testing",
       "Conduct user acceptance testing (UAT)",
@@ -164,6 +170,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 10",
     startWeek: 10,
     endWeek: 10,
+    progress: 0,
     activities: [
       "Configure server/hosting environment",
       "Deploy system to production",
@@ -183,6 +190,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 11",
     startWeek: 11,
     endWeek: 11,
+    progress: 0,
     activities: [
       "Conduct user testing with LGU staff",
       "Gather citizen feedback",
@@ -202,6 +210,7 @@ export const PROJECT_PHASES: ProjectPhase[] = [
     weeksLabel: "Week 12",
     startWeek: 12,
     endWeek: 12,
+    progress: 0,
     activities: [
       "Implement final improvements",
       "Complete system documentation and user manuals",

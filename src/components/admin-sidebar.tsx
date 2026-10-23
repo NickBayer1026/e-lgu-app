@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
   BarChart3,
-  BellRing,
   Building2,
   LayoutDashboard,
   LogOut,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { Logo } from "@/components/logo";
+import { NotificationsButton } from "@/components/notifications-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -183,14 +183,7 @@ export function AdminSidebar({
                 {currentUser.role}
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-8"
-              aria-label="Notifications"
-            >
-              <BellRing className="size-4" />
-            </Button>
+            <NotificationsButton scope="admin" className="size-8" />
           </div>
           <div className="flex items-center gap-2 border-t pt-3">
             <ThemeToggle />
@@ -209,14 +202,7 @@ export function AdminSidebar({
 
       {collapsed && (
         <div className="space-y-2 border-t p-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="mx-auto flex size-9"
-            aria-label="Notifications"
-          >
-            <BellRing className="size-4" />
-          </Button>
+          <NotificationsButton scope="admin" className="mx-auto flex size-9" />
           <div className="flex justify-center">
             <ThemeToggle />
           </div>
@@ -309,13 +295,7 @@ export function MobileAdminHeader({
                       {currentUser.role}
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label="Notifications"
-                  >
-                    <BellRing className="size-4" />
-                  </Button>
+                  <NotificationsButton scope="admin" className="size-7" />
                 </div>
                 <div className="flex items-center gap-2 border-t pt-3">
                   <ThemeToggle />

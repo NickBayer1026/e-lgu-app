@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -19,6 +20,7 @@ import {
   MobileAdminHeader,
   type AdminTab,
 } from "@/components/admin-sidebar";
+import { RequestReviewDialog } from "@/components/request-review-dialog";
 import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,11 +51,13 @@ import { AdminReports } from "@/components/views/admin/reports";
 import { AdminRequests } from "@/components/views/admin/requests";
 import { AdminServices } from "@/components/views/admin/services";
 import { AdminSettings } from "@/components/views/admin/settings";
+import { useAppState } from "@/lib/app-state";
 import {
   ADMIN_METRICS,
+  DATA_LAST_UPDATED,
   OVERALL_REQUEST_STATUS,
   OVERALL_STATUS_TOTAL,
-  RECENT_REQUESTS,
+  REQUEST_STATUS_COLORS,
   REQUESTS_BY_SERVICE,
   SUBMISSION_VOLUME_30_DAYS,
 } from "@/lib/mock-data";
@@ -77,19 +81,20 @@ const volumeChartConfig = {
 } as const;
 
 const statusChartConfig = {
-  pending: { label: "Pending", color: "#f59e0b" },
-  review: { label: "Under Review", color: "#3b82f6" },
-  approved: { label: "Approved", color: "#10b981" },
-  pickup: { label: "Ready for Pickup", color: "#0ea5e9" },
-  rejected: { label: "Rejected", color: "#f43f5e" },
+  pending: { label: "Pending", color: REQUEST_STATUS_COLORS.Pending },
+  review: {
+    label: "Under Review",
+    color: REQUEST_STATUS_COLORS["Under Review"],
+  },
+  approved: { label: "Approved", color: REQUEST_STATUS_COLORS.Approved },
+  pickup: {
+    label: "Ready for Pickup",
+    color: REQUEST_STATUS_COLORS["Ready for Pickup"],
+  },
+  rejected: { label: "Rejected", color: REQUEST_STATUS_COLORS.Rejected },
 } as const;
 
-const STATUS_DATA_WITH_COLORS = OVERALL_REQUEST_STATUS.map((item, i) => ({
-  ...item,
-  fill:
-    item.fill ??
-    Object.values(statusChartConfig)[i].color,
-}));
+const STATUS_DATA_WITH_COLORS = OVERALL_REQUEST_STATUS;
 
 export function AdminView({ onBackToPublic }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
@@ -137,6 +142,34 @@ export function AdminView({ onBackToPublic }: AdminViewProps) {
 }
 
 function OverviewContent() {
+  const { requests } = useAppState();
+  const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selected = selectedId
+    ? requests.find((request) => request.id === selectedId) ?? null
+    : null;
+
+  const recentRequests = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return requests
+      .filter((request) => {
+        if (!query) return true;
+        return [request.trackingId, request.citizen, request.service].some(
+          (value) => value.toLowerCase().includes(query)
+        );
+      })
+      .slice()
+      .sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      )
+      .slice(0, 7);
+  }, [requests, search]);
+
+  const totalRequests = OVERALL_STATUS_TOTAL;
+  const pendingApprovals = ADMIN_METRICS.pendingApprovals;
+
   return (
     <div className="space-y-6">
       {/* PAGE HEADER */}
@@ -150,23 +183,29 @@ function OverviewContent() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Input
-            placeholder="Search tracking ID..."
-                className="h-9 w-full sm:w-56"
-              />
-              <Badge variant="outline" className="h-9">
-                Last updated: Today
-              </Badge>
-            </div>
+          <div className="relative w-full sm:w-56">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search tracking ID..."
+              className="h-9 pl-9"
+              aria-label="Search recent requests"
+            />
           </div>
+          <Badge variant="outline" className="h-9 whitespace-nowrap">
+            Last updated: {DATA_LAST_UPDATED}
+          </Badge>
+        </div>
+      </div>
 
           {/* METRIC CARDS */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 animate-stagger">
             <Card className="card-hover">
               <CardHeader className="pb-2">
-                <CardDescription>Total Requests</CardDescription>
+                <CardDescription>Total Requests (6 months)</CardDescription>
                 <CardTitle className="text-3xl font-bold tabular-nums">
-                  {ADMIN_METRICS.totalRequests.toLocaleString()}
+                  {totalRequests.toLocaleString()}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -179,15 +218,13 @@ function OverviewContent() {
               <CardHeader className="pb-2">
                 <CardDescription>Pending Approvals</CardDescription>
                 <CardTitle className="text-3xl font-bold tabular-nums">
-                  {ADMIN_METRICS.pendingApprovals.toLocaleString()}
+                  {pendingApprovals.toLocaleString()}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-amber-600 dark:text-amber-400">
                   {Math.round(
-                    (ADMIN_METRICS.pendingApprovals /
-                      ADMIN_METRICS.totalRequests) *
-                      100
+                    (pendingApprovals / totalRequests) * 100
                   )}
                   % awaiting review
                 </p>
@@ -432,7 +469,8 @@ function OverviewContent() {
             <CardHeader>
               <CardTitle>Recent Requests</CardTitle>
               <CardDescription>
-                Latest incoming citizen service requests needing review
+                Latest incoming citizen service requests. Search by tracking
+                ID, citizen, or service.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -449,7 +487,7 @@ function OverviewContent() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {RECENT_REQUESTS.map((request) => (
+                  {recentRequests.map((request) => (
                     <TableRow
                       key={request.id}
                       className="transition-colors hover:bg-muted/50"
@@ -470,17 +508,36 @@ function OverviewContent() {
                         <StatusBadge status={request.status} />
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="outline" size="sm">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedId(request.id)}
+                        >
                           Review
                         </Button>
                       </TableCell>
                     </TableRow>
                   ))}
+                  {recentRequests.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={6}
+                        className="py-10 text-center text-muted-foreground"
+                      >
+                        No recent requests match your search.
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
               </div>
             </CardContent>
           </Card>
+
+      <RequestReviewDialog
+        request={selected}
+        onClose={() => setSelectedId(null)}
+      />
     </div>
   );
 }
