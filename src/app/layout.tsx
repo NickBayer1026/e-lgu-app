@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BackgroundBokeh } from "@/components/background-bokeh";
+import { CursorFx } from "@/components/cursor-fx";
 import { LoadingScreen } from "@/components/loading-screen";
 
 const geistSans = Geist({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <BackgroundBokeh />
+        <CursorFx />
         <LoadingScreen />
         <ThemeProvider
           attribute="class"

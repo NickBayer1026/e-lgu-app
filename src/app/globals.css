@@ -351,7 +351,83 @@
   background-color: var(--border);
 }
 
+/* ---------------------------------------------------------------------------
+   Cursor-reactive effects
+   The spotlight follows the pointer, and cards get a thin gradient outline
+   that shines toward the pointer. Coordinates are written by <CursorFx />.
+--------------------------------------------------------------------------- */
+
+.cursor-spotlight {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 40rem;
+  height: 40rem;
+  pointer-events: none;
+  opacity: 0;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in oklab, var(--primary) 16%, transparent) 0%,
+    color-mix(in oklab, var(--primary) 6%, transparent) 38%,
+    transparent 70%
+  );
+  transform: translate3d(
+    calc(var(--cursor-x, 50vw) - 50%),
+    calc(var(--cursor-y, 50vh) - 50%),
+    0
+  );
+  transition: opacity 400ms ease;
+  will-change: transform;
+}
+
+.cursor-spotlight[data-active="true"] {
+  opacity: 1;
+}
+
+[data-slot="card"] {
+  --cursor-mx: 50%;
+  --cursor-my: 50%;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-slot="card"] {
+    position: relative;
+  }
+
+  [data-slot="card"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(
+      220px circle at var(--cursor-mx) var(--cursor-my),
+      color-mix(in oklab, var(--primary) 92%, transparent) 0%,
+      color-mix(in oklab, var(--primary) 42%, transparent) 38%,
+      transparent 72%
+    );
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+    -webkit-mask: linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+  }
+
+  [data-slot="card"]:hover::after {
+    opacity: 1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .cursor-spotlight {
+    display: none;
+  }
+
   *,
   *::before,
   *::after {
