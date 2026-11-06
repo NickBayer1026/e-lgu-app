@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/table";
 import { PersonalityBadge } from "@/components/personality-badge";
 import { Reveal } from "@/components/reveal";
+import { ProjectCommunicationPlan } from "@/components/project-communication-plan";
 import { ProjectGantt } from "@/components/project-gantt";
 import { ProjectWbs } from "@/components/project-wbs";
 import { TeamOrgChart } from "@/components/team-org-chart";
@@ -143,6 +144,7 @@ const SECTIONS = [
   { id: "budget", label: "Budget" },
   { id: "team", label: "Team & Contact" },
   { id: "org-chart", label: "Org Chart" },
+  { id: "communication-plan", label: "Communication Plan" },
 ];
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
@@ -856,6 +858,23 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
           />
           <Reveal>
             <TeamOrgChart />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* PROJECT COMMUNICATION PLAN */}
+      <section
+        id="communication-plan"
+        className="scroll-mt-16 bg-background py-20"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <SectionHeading
+            eyebrow="9 · Communication Plan"
+            title="Project Communication Plan"
+            description="How the team will communicate, share information, and coordinate with stakeholders throughout the e-LGU project."
+          />
+          <Reveal>
+            <ProjectCommunicationPlan />
           </Reveal>
         </div>
       </section>

@@ -30,7 +30,7 @@ This project is configured to deploy on Vercel. After pushing to GitHub:
 - `1 · Citizen Landing` — public service showcase and request tracking
 - `2 · Citizen Dashboard` — example citizen account and request statuses
 - `3 · Admin Dashboard` — LGU internal dashboard with analytics
-- `4 · Project Plan` — project portfolio: overview, WBS, sequencing, durations, Gantt chart, budget, team roles, and organizational chart
+- `4 · Project Plan` — project portfolio: overview, WBS, sequencing, durations, Gantt chart, budget, team roles, organizational chart, and project communication plan
 
 ## Tech Stack
 

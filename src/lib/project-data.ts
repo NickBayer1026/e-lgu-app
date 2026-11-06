@@ -502,3 +502,254 @@ export const CONTACT = {
   location: "Dapitan City, Zamboanga del Norte",
   note: "Academic prototype for Laboratory Exercise 2 — Software Project Schedule & Portfolio",
 };
+
+/* ------------------------------------------------------------------ */
+/* PROJECT COMMUNICATION PLAN                                         */
+/* ------------------------------------------------------------------ */
+export type StakeholderType = "Internal" | "External";
+
+export interface CommunicationStakeholder {
+  id: string;
+  stakeholder: string;
+  type: StakeholderType;
+  role: string;
+  involvement: string;
+}
+
+export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
+  {
+    id: "cs1",
+    stakeholder: "Project Sponsor",
+    type: "External",
+    role: "LGU Administrator / City Mayor's Office representative",
+    involvement:
+      "Approves the project direction, budget, and final acceptance of the e-LGU system.",
+  },
+  {
+    id: "cs2",
+    stakeholder: "Project Manager",
+    type: "Internal",
+    role: "Nicholas Orlino P. Bayron — project lead and main contact",
+    involvement:
+      "Leads planning, assigns tasks, monitors progress, and coordinates communication with all stakeholders.",
+  },
+  {
+    id: "cs3",
+    stakeholder: "Project Team Members",
+    type: "Internal",
+    role: "System Analyst, UI/UX Designer, Web Developer, and Database / Technical",
+    involvement:
+      "Perform assigned tasks and report progress, issues, and completed deliverables.",
+  },
+  {
+    id: "cs4",
+    stakeholder: "LGU Employees / Admin Staff",
+    type: "External",
+    role: "End users who process, approve, and monitor service requests",
+    involvement:
+      "Use the admin dashboard and provide feedback on workflows, records, and reports.",
+  },
+  {
+    id: "cs5",
+    stakeholder: "Citizens / Residents",
+    type: "External",
+    role: "End users who request LGU services online",
+    involvement:
+      "Submit requests, upload requirements, and track the status of their requests.",
+  },
+  {
+    id: "cs6",
+    stakeholder: "Course Instructor / Evaluator",
+    type: "External",
+    role: "Academic adviser and project evaluator",
+    involvement:
+      "Reviews project documentation, monitors progress, and evaluates the final system output.",
+  },
+];
+
+export interface CommunicationObjective {
+  id: string;
+  title: string;
+  objective: string;
+  detail: string;
+}
+
+export const COMMUNICATION_OBJECTIVES: CommunicationObjective[] = [
+  {
+    id: "co1",
+    title: "Keep the team aligned",
+    objective:
+      "To keep all team members informed about project progress, task assignments, and deadlines.",
+    detail:
+      "Daily updates and a weekly group meeting keep every member aware of what is done, what comes next, and what is blocking the work.",
+  },
+  {
+    id: "co2",
+    title: "Gather accurate requirements",
+    objective:
+      "To gather clear requirements and user feedback from LGU staff and citizens.",
+    detail:
+      "Interviews, user acceptance testing, and short surveys confirm that the system matches real service workflows and user needs.",
+  },
+  {
+    id: "co3",
+    title: "Keep decision-makers updated",
+    objective:
+      "To keep the project sponsor and instructor updated on milestones, risks, and approvals.",
+    detail:
+      "Formal progress reports and email updates give decision-makers the information they need at the right time.",
+  },
+  {
+    id: "co4",
+    title: "Keep one source of truth",
+    objective:
+      "To document decisions and deliverables in a shared location that everyone can access.",
+    detail:
+      "A shared drive and task board prevent lost messages and conflicting versions of plans, requirements, and designs.",
+  },
+  {
+    id: "co5",
+    title: "Resolve issues quickly",
+    objective:
+      "To resolve questions and blockers quickly through clear channels and response expectations.",
+    detail:
+      "The team agrees on where to ask for help, who to escalate to, and how soon a response should be expected.",
+  },
+];
+
+export interface CommunicationMatrixRow {
+  id: string;
+  stakeholder: string;
+  information: string;
+  method: string;
+  frequency: string;
+  responsible: string;
+}
+
+export const COMMUNICATION_MATRIX: CommunicationMatrixRow[] = [
+  {
+    id: "cm1",
+    stakeholder: "Project Sponsor",
+    information:
+      "Project status, milestone approvals, budget, and scope decisions",
+    method: "Formal progress report and email",
+    frequency: "Every two weeks / at milestones",
+    responsible: "Nicholas (Project Manager)",
+  },
+  {
+    id: "cm2",
+    stakeholder: "Project Manager",
+    information: "Task assignments, deadlines, blockers, and meeting agenda",
+    method: "Group chat and weekly group meeting",
+    frequency: "Daily / weekly",
+    responsible: "Nicholas (Project Manager)",
+  },
+  {
+    id: "cm3",
+    stakeholder: "Project Team Members",
+    information: "Task progress, issues, and completed deliverables",
+    method: "Group chat and shared task board",
+    frequency: "Daily",
+    responsible: "Nicholas (Project Manager)",
+  },
+  {
+    id: "cm4",
+    stakeholder: "UI/UX Designer",
+    information: "Screen mockups, design revisions, and usability feedback",
+    method: "Design review meeting and shared mockups",
+    frequency: "Per design milestone",
+    responsible: "Cipreano (UI/UX Designer)",
+  },
+  {
+    id: "cm5",
+    stakeholder: "LGU Employees / Admin Staff",
+    information:
+      "Workflow requirements, system feedback, and testing results",
+    method: "Interview and user acceptance testing (UAT)",
+    frequency: "As needed / during testing and evaluation",
+    responsible: "Bon (System Analyst)",
+  },
+  {
+    id: "cm6",
+    stakeholder: "Citizens / Residents",
+    information:
+      "Feedback on request submission, tracking, and overall usability",
+    method: "Short survey and user interview",
+    frequency: "As needed / during evaluation",
+    responsible: "Bon (System Analyst)",
+  },
+  {
+    id: "cm7",
+    stakeholder: "Database / Technical",
+    information: "Data requirements, schema changes, and security concerns",
+    method: "Technical huddle and group chat",
+    frequency: "Weekly / as needed",
+    responsible: "Christian Mark (Database / Technical)",
+  },
+  {
+    id: "cm8",
+    stakeholder: "Course Instructor / Evaluator",
+    information:
+      "Progress reports, project documentation, and final system output",
+    method: "Email and consultation meeting",
+    frequency: "Per submission / monthly",
+    responsible: "Nicholas (Project Manager)",
+  },
+];
+
+export interface CommunicationMethod {
+  id: string;
+  method: string;
+  channel: string;
+  purpose: string;
+  bestFor: string;
+  icon: string;
+}
+
+export const COMMUNICATION_METHODS: CommunicationMethod[] = [
+  {
+    id: "cmeth1",
+    method: "Group Chat",
+    channel: "Messenger or Discord group",
+    purpose:
+      "For daily updates, quick questions, reminders, and immediate alerts about blockers.",
+    bestFor: "Daily coordination and urgent concerns",
+    icon: "chat",
+  },
+  {
+    id: "cmeth2",
+    method: "Weekly Group Meeting",
+    channel: "Face-to-face or video call",
+    purpose:
+      "To review progress, plan the week's tasks, resolve issues, and confirm the next deliverables.",
+    bestFor: "Planning, review, and issue resolution",
+    icon: "meeting",
+  },
+  {
+    id: "cmeth3",
+    method: "Email",
+    channel: "Official group email",
+    purpose:
+      "For formal requests, approvals, document submission, and a written record of important decisions.",
+    bestFor: "Formal communication and documentation",
+    icon: "email",
+  },
+  {
+    id: "cmeth4",
+    method: "Shared Task Board & Documentation",
+    channel: "Google Drive, Trello, or Notion",
+    purpose:
+      "To store plans, meeting minutes, requirements, designs, and task status in one shared reference.",
+    bestFor: "Documentation and progress tracking",
+    icon: "board",
+  },
+  {
+    id: "cmeth5",
+    method: "Interview / Focus Group / UAT Session",
+    channel: "In person or video call",
+    purpose:
+      "To gather requirements and usability feedback from LGU staff and citizens, and to validate the system.",
+    bestFor: "Requirements gathering and user feedback",
+    icon: "interview",
+  },
+];
