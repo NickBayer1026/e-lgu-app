@@ -184,7 +184,7 @@ const NAV_GROUPS: NavGroup[] = [
   },
   {
     id: "communication-plan",
-    label: "Communication",
+    label: "Communication Plan",
     sections: [
       { id: "communication-plan", label: "Communication Plan" },
     ],
@@ -303,7 +303,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
         <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border bg-background/80 px-4 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur animate-fade-in-up">
             <Layers className="size-3.5 text-primary" />
-            IS Project Portfolio · Laboratory Exercise 2
+            IS Project Portfolio · Software Project Management
           </div>
           <h1 className="mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight animate-fade-in-up [animation-delay:0.1s] sm:text-5xl">
             Project Schedule Plan &{" "}

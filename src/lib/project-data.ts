@@ -500,7 +500,7 @@ export const CONTACT = {
   org: "e-LGU Project Group",
   email: "elgu.project.group@gmail.com",
   location: "Dapitan City, Zamboanga del Norte",
-  note: "Academic prototype for Laboratory Exercise 2 — Software Project Schedule & Portfolio",
+  note: "Academic prototype for IS Project Management — Project Schedule, Team, and Communication Portfolio",
 };
 
 /* ------------------------------------------------------------------ */
@@ -519,11 +519,11 @@ export interface CommunicationStakeholder {
 export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
   {
     id: "cs1",
-    stakeholder: "Project Sponsor",
+    stakeholder: "Project Sponsor / LGU Client",
     type: "External",
     role: "LGU Administrator / City Mayor's Office representative",
     involvement:
-      "Approves the project direction, budget, and final acceptance of the e-LGU system.",
+      "Approves the project direction, budget, and final acceptance of the e-LGU system as the LGU client.",
   },
   {
     id: "cs2",
@@ -543,6 +543,14 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
   },
   {
     id: "cs4",
+    stakeholder: "UI/UX Designer",
+    type: "Internal",
+    role: "Cipreano Mellomida — designs clear screens and a simple user experience",
+    involvement:
+      "Shares screen mockups, design revisions, and usability feedback with the team and end users.",
+  },
+  {
+    id: "cs5",
     stakeholder: "Web Developer / Programmer",
     type: "Internal",
     role: "Regie Inding — builds and integrates the system features",
@@ -550,7 +558,7 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
       "Shares development progress, completed features, and technical blockers with the team.",
   },
   {
-    id: "cs5",
+    id: "cs6",
     stakeholder: "LGU Employees / Admin Staff",
     type: "External",
     role: "End users who process, approve, and monitor service requests",
@@ -558,7 +566,7 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
       "Use the admin dashboard and provide feedback on workflows, records, and reports.",
   },
   {
-    id: "cs6",
+    id: "cs7",
     stakeholder: "Citizens / Residents",
     type: "External",
     role: "End users who request LGU services online",
@@ -566,7 +574,7 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
       "Submit requests, upload requirements, and track the status of their requests.",
   },
   {
-    id: "cs7",
+    id: "cs8",
     stakeholder: "Course Instructor / Evaluator",
     type: "External",
     role: "Academic adviser and project evaluator",
@@ -637,7 +645,7 @@ export interface CommunicationMatrixRow {
 export const COMMUNICATION_MATRIX: CommunicationMatrixRow[] = [
   {
     id: "cm1",
-    stakeholder: "Project Sponsor",
+    stakeholder: "Project Sponsor / LGU Client",
     information:
       "Project status, milestone approvals, budget, and scope decisions",
     method: "Formal progress report and email",
