@@ -8,6 +8,7 @@ import {
   Bug,
   CalendarDays,
   CheckCircle2,
+  ChevronDown,
   ClipboardCheck,
   ClipboardList,
   Code2,
@@ -31,6 +32,12 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Card,
   CardContent,
@@ -135,24 +142,74 @@ function SectionHeading({
   );
 }
 
-const SECTIONS = [
-  { id: "overview", label: "Overview" },
-  { id: "wbs", label: "WBS" },
-  { id: "sequencing", label: "Sequencing" },
-  { id: "duration", label: "Duration" },
-  { id: "gantt", label: "Gantt Chart" },
-  { id: "budget", label: "Budget" },
-  { id: "team", label: "Team & Contact" },
-  { id: "org-chart", label: "Org Chart" },
-  { id: "communication-plan", label: "Communication Plan" },
+interface NavSection {
+  id: string;
+  label: string;
+}
+
+interface NavGroup {
+  id: string;
+  label: string;
+  sections: NavSection[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    id: "overview",
+    label: "Overview",
+    sections: [{ id: "overview", label: "Overview" }],
+  },
+  {
+    id: "schedule",
+    label: "Schedule",
+    sections: [
+      { id: "wbs", label: "WBS" },
+      { id: "sequencing", label: "Sequencing" },
+      { id: "duration", label: "Duration" },
+      { id: "gantt", label: "Gantt Chart" },
+    ],
+  },
+  {
+    id: "budget",
+    label: "Budget",
+    sections: [{ id: "budget", label: "Budget" }],
+  },
+  {
+    id: "team",
+    label: "Team",
+    sections: [
+      { id: "team", label: "Team & Contact" },
+      { id: "org-chart", label: "Org Chart" },
+    ],
+  },
+  {
+    id: "communication-plan",
+    label: "Communication",
+    sections: [
+      { id: "communication-plan", label: "Communication Plan" },
+    ],
+  },
 ];
+
+const SECTIONS = NAV_GROUPS.flatMap((group) => group.sections);
 
 export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps) {
   const sequencerRef = useRef<HTMLDivElement>(null);
   const navContainerRef = useRef<HTMLDivElement>(null);
-  const navItemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const navItemRefs = useRef<Record<string, HTMLElement | null>>({});
   const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
   const [navPill, setNavPill] = useState({ left: 0, width: 0 });
+
+  const activeGroupId =
+    NAV_GROUPS.find((group) =>
+      group.sections.some((section) => section.id === activeSection)
+    )?.id ?? NAV_GROUPS[0].id;
+
+  const scrollToSection = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     const el = sequencerRef.current;
@@ -207,7 +264,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
 
   useLayoutEffect(() => {
     const container = navContainerRef.current;
-    const item = navItemRefs.current[activeSection];
+    const item = navItemRefs.current[activeGroupId];
     if (!container || !item) return;
 
     const updatePill = () => {
@@ -237,7 +294,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
     observer.observe(item);
 
     return () => observer.disconnect();
-  }, [activeSection]);
+  }, [activeGroupId]);
 
   return (
     <div className="relative z-10">
@@ -303,31 +360,74 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
             style={{ left: navPill.left, width: navPill.width }}
           />
 
-          {SECTIONS.map((s) => (
-            <a
-              key={s.id}
-              ref={(el) => {
-                navItemRefs.current[s.id] = el;
-              }}
-              href={`#${s.id}`}
-              aria-current={activeSection === s.id ? "location" : undefined}
-              onClick={(e) => {
-                e.preventDefault();
-                document
-                  .getElementById(s.id)
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                e.currentTarget.blur();
-              }}
-              className={cn(
-                "relative z-10 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-300",
-                activeSection === s.id
-                  ? "text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {s.label}
-            </a>
-          ))}
+          {NAV_GROUPS.map((group) => {
+            const isActive = activeGroupId === group.id;
+            const baseClass =
+              "relative z-10 shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-300";
+            const stateClass = isActive
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground";
+
+            if (group.sections.length === 1) {
+              const section = group.sections[0];
+
+              return (
+                <a
+                  key={group.id}
+                  ref={(el) => {
+                    navItemRefs.current[group.id] = el;
+                  }}
+                  href={`#${section.id}`}
+                  aria-current={isActive ? "location" : undefined}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToSection(section.id);
+                    e.currentTarget.blur();
+                  }}
+                  className={cn(baseClass, stateClass)}
+                >
+                  {group.label}
+                </a>
+              );
+            }
+
+            return (
+              <DropdownMenu key={group.id}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    ref={(el) => {
+                      navItemRefs.current[group.id] = el;
+                    }}
+                    type="button"
+                    aria-current={isActive ? "location" : undefined}
+                    className={cn(
+                      baseClass,
+                      stateClass,
+                      "group inline-flex items-center gap-0.5"
+                    )}
+                  >
+                    {group.label}
+                    <ChevronDown className="size-3.5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48">
+                  {group.sections.map((section) => (
+                    <DropdownMenuItem
+                      key={section.id}
+                      onSelect={() => scrollToSection(section.id)}
+                      className={cn(
+                        "cursor-pointer",
+                        activeSection === section.id &&
+                          "bg-primary/10 font-medium text-primary focus:bg-primary/10 focus:text-primary"
+                      )}
+                    >
+                      {section.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })}
         </div>
       </nav>
 
