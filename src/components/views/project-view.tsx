@@ -979,7 +979,7 @@ export function ProjectView({ onBackToPublic, onSwitchToView }: ProjectViewProps
         </div>
       </section>
 
-      <footer className="border-t bg-muted/40 py-8">
+      <footer className="border-t bg-muted/40 pt-8 pb-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <p className="text-center text-sm font-medium">
             {PROJECT_OVERVIEW.title}

@@ -257,7 +257,7 @@ export function LandingView({ onLogin, onSwitchToView }: LandingViewProps) {
         </div>
       </section>
 
-<footer className="bg-background py-6">
+<footer className="bg-background pt-6 pb-28">
         <p className="text-center text-xs text-muted-foreground">
           © 2026 e-LGU City Government of Dapitan · Prototype for academic
           purposes only
