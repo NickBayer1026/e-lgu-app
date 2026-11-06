@@ -537,12 +537,20 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
     id: "cs3",
     stakeholder: "Project Team Members",
     type: "Internal",
-    role: "System Analyst, UI/UX Designer, Web Developer, and Database / Technical",
+    role: "Bon (System Analyst), Cipreano (UI/UX Designer), Regie (Web Developer / Programmer), and Christian Mark (Database / Technical)",
     involvement:
       "Perform assigned tasks and report progress, issues, and completed deliverables.",
   },
   {
     id: "cs4",
+    stakeholder: "Web Developer / Programmer",
+    type: "Internal",
+    role: "Regie Inding — builds and integrates the system features",
+    involvement:
+      "Shares development progress, completed features, and technical blockers with the team.",
+  },
+  {
+    id: "cs5",
     stakeholder: "LGU Employees / Admin Staff",
     type: "External",
     role: "End users who process, approve, and monitor service requests",
@@ -550,7 +558,7 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
       "Use the admin dashboard and provide feedback on workflows, records, and reports.",
   },
   {
-    id: "cs5",
+    id: "cs6",
     stakeholder: "Citizens / Residents",
     type: "External",
     role: "End users who request LGU services online",
@@ -558,7 +566,7 @@ export const COMMUNICATION_STAKEHOLDERS: CommunicationStakeholder[] = [
       "Submit requests, upload requirements, and track the status of their requests.",
   },
   {
-    id: "cs6",
+    id: "cs7",
     stakeholder: "Course Instructor / Evaluator",
     type: "External",
     role: "Academic adviser and project evaluator",
@@ -651,6 +659,15 @@ export const COMMUNICATION_MATRIX: CommunicationMatrixRow[] = [
     method: "Group chat and shared task board",
     frequency: "Daily",
     responsible: "Nicholas (Project Manager)",
+  },
+  {
+    id: "cm9",
+    stakeholder: "Web Developer / Programmer",
+    information:
+      "Development progress, completed features, and technical blockers",
+    method: "Group chat, shared task board, and technical huddle",
+    frequency: "Daily / weekly",
+    responsible: "Regie (Web Developer / Programmer)",
   },
   {
     id: "cm4",
